@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2d1230">
+  <title>Hedef AVM | Birleşik Yönetim Paneli</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --bar-h: 58px;
+      --bg: #f6f4f8;
+      --surface: #ffffff;
+      --ink: #2b2033;
+      --muted: #6c6076;
+      --line: #e6deeb;
+      --brand: #a51d7b;
+      --brand-bright: #c73296;
+      --brand-dark: #841460;
+      --brand-soft: #fbedf6;
+      --deep-1: #2f1232;
+      --deep-2: #1d0c20;
+      --green: #167954;
+      --green-soft: #e8f7f0;
+      --amber: #9a5b13;
+      --amber-soft: #fff7e6;
+      --red: #b4233c;
+      --red-soft: #fff1f3;
+      --radius: 16px;
+      --shadow: 0 6px 28px rgba(45, 18, 48, 0.06);
+      --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--brand-bright);
+      outline-offset: 2px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Shell layout */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* Top unified bar */
+    .topbar {
+      height: var(--bar-h);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 18px;
+      background: linear-gradient(90deg, var(--deep-1) 0%, var(--deep-2) 100%);
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 50;
+    }
+
+    .brand-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      padding: 4px 6px 4px 0;
+      border-radius: 10px;
+      flex-shrink: 0;
+      text-align: left;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #d74da7, #a51d7b);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(215, 77, 167, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand-text strong {
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .brand-text span {
+      font-size: 0.65rem;
+      color: #d6b6d8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 9px;
+      color: #e4cfe6;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .nav-tab svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .nav-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-tab.active {
+      color: #fff;
+      background: var(--brand);
+      box-shadow: 0 3px 12px rgba(165, 29, 123, 0.45);
+    }
+
+    .nav-tab .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      display: none;
+    }
+
+    .nav-tab.loaded .live-dot { display: inline-block; }
+    .nav-tab.auth-err .live-dot { display: inline-block; background: #fb7185; }
+    .nav-tab.auth-wait .live-dot { display: inline-block; background: #fbbf24; }
+
+    .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .session-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 34px;
+      padding: 0 11px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #f6e7f7;
+      font-size: 0.74rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .session-chip i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      display: inline-block;
+    }
+
+    .bar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 11px;
+      border-radius: 9px;
+      color: #e8d5ea;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .bar-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+
+    .bar-btn.danger:hover {
+      background: rgba(225, 29, 72, 0.3);
+      border-color: rgba(251, 113, 133, 0.5);
+    }
+
+    .bar-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .bar-clock {
+      font-size: 0.75rem;
+      color: #d6b6d8;
+      font-variant-numeric: tabular-nums;
+      padding-left: 4px;
+      white-space: nowrap;
+    }
+
+    /* Workspace area */
+    .stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* Hub Home Screen */
+    .hub-home {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 32px 24px 48px;
+      background:
+        radial-gradient(ellipse at 92% 6%, rgba(165, 29, 123, 0.09), transparent 44%),
+        radial-gradient(ellipse at 6% 96%, rgba(37, 99, 235, 0.06), transparent 45%),
+        var(--bg);
+    }
+
+    .hub-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Centralized Login Card */
+    .sso-wrap {
+      max-width: 980px;
+      margin: 18px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(45, 18, 48, 0.1);
+    }
+
+    .sso-story {
+      position: relative;
+      padding: 38px 34px;
+      background:
+        radial-gradient(ellipse at 10% 100%, rgba(199, 50, 150, 0.32), transparent 60%),
+        linear-gradient(155deg, #321235 0%, #1d0c20 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .sso-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #f0b2dc;
+      margin-bottom: 14px;
+    }
+
+    .sso-story h1 {
+      margin: 0 0 12px;
+      font-size: 1.95rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+    }
+
+    .sso-story p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #dec2e0;
+    }
+
+    .sso-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .sso-feat {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .sso-feat strong {
+      display: block;
+      font-size: 0.84rem;
+      color: #fff;
+    }
+
+    .sso-feat small {
+      display: block;
+      font-size: 0.74rem;
+      color: #d6b6d8;
+      margin-top: 2px;
+    }
+
+    .sso-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: rgba(215, 77, 167, 0.25);
+      color: #f7c7e8;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .sso-foot {
+      font-size: 0.74rem;
+      color: #bea0c2;
+      line-height: 1.55;
+    }
+
+    .sso-form-side {
+      padding: 36px 36px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .sso-form-side h2 {
+      margin: 0 0 6px;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+
+    .sso-sub {
+      margin: 0 0 22px;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .role-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 5px;
+      border-radius: 12px;
+      background: #f5f0f7;
+      border: 1px solid var(--line);
+      margin-bottom: 22px;
+    }
+
+    .role-switch button {
+      height: 40px;
+      border-radius: 9px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--muted);
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .role-switch button.active {
+      background: #fff;
+      color: var(--brand);
+      box-shadow: 0 2px 10px rgba(45, 18, 48, 0.08);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 650;
+      color: #4c3d57;
+      margin-bottom: 6px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid #d9cde0;
+      background: #fff;
+      color: var(--ink);
+      font-size: 0.92rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(165, 29, 123, 0.14);
+    }
+
+    .pwd-wrap {
+      position: relative;
+    }
+
+    .pwd-wrap input {
+      padding-right: 64px;
+    }
+
+    .pwd-peek {
+      position: absolute;
+      right: 6px;
+      top: 5px;
+      height: 36px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 650;
+      color: var(--muted);
+    }
+
+    .pwd-peek:hover {
+      background: var(--brand-soft);
+      color: var(--brand);
+    }
+
+    .custom-pwds {
+      margin: 4px 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fcfafd;
+      overflow: hidden;
+    }
+
+    .custom-pwds summary {
+      padding: 11px 14px;
+      font-size: 0.78rem;
+      font-weight: 650;
+      color: var(--brand);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-pwds-body {
+      padding: 4px 14px 14px;
+      display: grid;
+      gap: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .custom-pwds-body .field {
+      margin: 0;
+    }
+
+    .custom-pwds-body input {
+      height: 38px;
+      font-size: 0.84rem;
+    }
+
+    .sso-submit {
+      width: 100%;
+      height: 48px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(165, 29, 123, 0.28);
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .sso-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 9px 26px rgba(165, 29, 123, 0.36);
+    }
+
+    .sso-error {
+      margin-bottom: 14px;
+      padding: 10px 13px;
+      border-radius: 9px;
+      background: var(--red-soft);
+      color: var(--red);
+      border: 1px solid #fecdd3;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .manual-link-wrap {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .manual-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .manual-link:hover {
+      color: var(--brand);
+    }
+
+    /* Portal Dashboard View (After Login) */
+    .hero {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero-kicker i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: inline-block;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 2.8vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      line-height: 1.18;
+    }
+
+    .hero p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .status-pill .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #16a34a;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+    }
+
+    /* Module Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .module-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      padding: 26px 24px 22px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      overflow: hidden;
+    }
+
+    .module-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--card-accent, var(--brand));
+    }
+
+    .module-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--card-accent, var(--brand));
+      box-shadow: 0 14px 36px rgba(45, 18, 48, 0.11);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--card-soft, var(--brand-soft));
+      color: var(--card-accent, var(--brand));
+      flex-shrink: 0;
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.85;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #f3eff6;
+      color: var(--muted);
+      white-space: nowrap;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-badge.open { background: var(--green-soft); color: var(--green); }
+    .card-badge.wait { background: var(--amber-soft); color: var(--amber); }
+    .card-badge.err  { background: var(--red-soft); color: var(--red); }
+
+    .module-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.16rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .module-card p {
+      margin: 0 0 18px;
+      font-size: 0.87rem;
+      line-height: 1.62;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .card-tags span {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f7f4fa;
+      color: #5c4d69;
+    }
+
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 11px;
+      background: var(--card-soft, var(--brand-soft));
+      color: var(--card-accent, var(--brand));
+      font-size: 0.84rem;
+      font-weight: 700;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .module-card:hover .card-cta {
+      background: var(--card-accent, var(--brand));
+      color: #fff;
+    }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .info-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .info-box strong { display: block; font-size: 0.83rem; color: var(--ink); }
+    .info-box small { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; line-height: 1.45; }
+
+    .kbd {
+      display: inline-grid;
+      place-items: center;
+      min-width: 38px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background: #f3eff6;
+      border: 1px solid #dfd5e7;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    /* Module Iframe Panes */
+    .module-pane {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: none;
+    }
+
+    .module-pane.active { display: block; }
+
+    .module-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .frame-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 600;
+      z-index: 2;
+      transition: opacity 0.2s ease;
+    }
+
+    .frame-loader.done { opacity: 0; pointer-events: none; }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 3px solid #e7d6e6;
+      border-top-color: var(--brand);
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 980px) {
+      .cards-grid, .info-strip { grid-template-columns: 1fr; }
+      .sso-wrap { grid-template-columns: 1fr; }
+      .bar-clock, .session-chip { display: none; }
+    }
+
+    @media (max-width: 680px) {
+      .topbar { padding: 0 10px; gap: 6px; }
+      .brand-text { display: none; }
+      .nav-tab { padding: 0 10px; font-size: 0.76rem; }
+      .bar-btn span { display: none; }
+      .hub-home { padding: 18px 14px 32px; }
+      .sso-story, .sso-form-side { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar" role="banner">
+      <button type="button" class="brand-btn" data-go="home" title="Ana Portal'a Dön">
+        <span class="brand-mark">h</span>
+        <span class="brand-text">
+          <strong>HEDEF AVM</strong>
+          <span>Yönetim Paneli</span>
+        </span>
+      </button>
+
+      <nav class="nav-tabs hidden" id="mainNavTabs" role="tablist" aria-label="Modül Seçici">
+        <button type="button" class="nav-tab active" role="tab" aria-selected="true" data-go="home" id="tab-home">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span>Genel Portal</span>
+        </button>
+
+        <button type="button" class="nav-tab" role="tab" aria-selected="false" data-go="sikayet" id="tab-sikayet">
+          <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Şikayet & Görevler</span>
+          <i class="live-dot" aria-hidden="true"></i>
+        </button>
+
+        <button type="button" class="nav-tab" role="tab" aria-selected="false" data-go="kota" id="tab-kota">
+          <svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></svg>
+          <span>Kota & Peşinat</span>
+          <i class="live-dot" aria-hidden="true"></i>
+        </button>
+
+        <button type="button" class="nav-tab" role="tab" aria-selected="false" data-go="anketportal" id="tab-anketportal">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.5 2.2 2 3.5 2s2.5-.5 3.5-2"/><path d="M9 10h.01M15 10h.01"/></svg>
+          <span>Anket Portalı</span>
+          <i class="live-dot" aria-hidden="true"></i>
+        </button>
+      </nav>
+
+      <div class="bar-actions">
+        <span class="session-chip hidden" id="sessionChip"><i></i><span id="sessionLabel">Yönetici</span></span>
+        <button type="button" class="bar-btn hidden" id="reloadActiveBtn" title="Aktif modülü yenile">
+          <svg viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-1 7"/><path d="M20 4v6h-6"/></svg>
+          <span>Yenile</span>
+        </button>
+        <button type="button" class="bar-btn danger hidden" id="logoutAllBtn" title="Tüm panellerden çıkış yap">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          <span>Çıkış</span>
+        </button>
+        <span class="bar-clock" id="clockText">--:--</span>
+      </div>
+    </header>
+
+    <main class="stage">
+      <!-- HOME / PORTAL -->
+      <section class="hub-home" id="pane-home" aria-label="Genel Portal">
+        <div class="hub-inner">
+
+          <!-- 1) MERKEZİ GİRİŞ EKRANI -->
+          <div id="portalLoginView" class="sso-wrap">
+            <div class="sso-story">
+              <div>
+                <div class="sso-kicker">HEDEF ALIŞVERİŞ MERKEZLERİ · TEK GİRİŞ</div>
+                <h1>Tek girişle tüm panellere bağlanın.</h1>
+                <p>Genel Portal üzerinden bir kez giriş yaptığınızda, yetkiniz kapsamındaki tüm Hedef AVM sistemleri arka planda otomatik olarak açılır.</p>
+                <div class="sso-features">
+                  <div class="sso-feat">
+                    <span class="sso-num">1</span>
+                    <div>
+                      <strong>Şikayet & Personel Görev Paneli</strong>
+                      <small>Yönetici girişinde otomatik oturum açılır</small>
+                    </div>
+                  </div>
+                  <div class="sso-feat">
+                    <span class="sso-num">2</span>
+                    <div>
+                      <strong>Şube Kota & Net Peşinat Takip</strong>
+                      <small>Yönetim ve icmal panelinde otomatik oturum açılır</small>
+                    </div>
+                  </div>
+                  <div class="sso-feat">
+                    <span class="sso-num">3</span>
+                    <div>
+                      <strong>Anket & Değerlendirme Portalı</strong>
+                      <small>Merkez yönetim panelinde otomatik oturum açılır</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="sso-foot">
+                Bilgileriniz yalnızca bu oturum süresince ilgili Hedef AVM panellerine güvenli şekilde iletilir; şifreler diske kaydedilmez.
+              </div>
+            </div>
+
+            <div class="sso-form-side">
+              <h2>Yönetici Girişi</h2>
+              <p class="sso-sub">Yönetici hesabınızla tek kez giriş yapın; tüm Hedef AVM yönetim panelleri otomatik açılsın.</p>
+
+              <form id="portalLoginForm">
+                <div class="field" id="ssoUsernameField">
+                  <label for="ssoUsername">Kullanıcı Adı</label>
+                  <input id="ssoUsername" type="text" autocomplete="username" value="admin" placeholder="admin" required>
+                </div>
+
+                <div class="field">
+                  <label for="ssoPassword" id="ssoPasswordLabel">Yönetici Şifresi</label>
+                  <div class="pwd-wrap">
+                    <input id="ssoPassword" type="password" autocomplete="current-password" placeholder="Şifrenizi girin" required>
+                    <button type="button" class="pwd-peek" id="ssoPeekBtn">Göster</button>
+                  </div>
+                </div>
+
+                <div id="ssoError" class="sso-error hidden" role="alert"></div>
+
+                <button type="submit" class="sso-submit" id="ssoSubmitBtn">
+                  <span id="ssoSubmitText">Giriş Yap ve Panelleri Aç</span>
+                  <span>→</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- 2) GENEL PORTAL DASHBOARD (Giriş sonrası / Manuel mod) -->
+          <div id="portalDashboardView" class="hidden">
+            <div class="hero">
+              <div>
+                <div class="hero-kicker"><i></i> Hedef Alışveriş Merkezleri · Tek Merkez</div>
+                <h1 id="greetingTitle">Hedef AVM Yönetim Paneli</h1>
+                <p>Şikayet ve personel görev takibi, şube kota & net peşinat yönetimi ile anket değerlendirme portalının tamamı tek çatı altında.</p>
+              </div>
+              <div class="status-pill">
+                <span class="pulse" aria-hidden="true"></span>
+                <span id="activeCountText">3 Sistem Entegre · Hazır</span>
+              </div>
+            </div>
+
+            <div class="cards-grid">
+              <button type="button" class="module-card" data-go="sikayet" style="--card-accent:#a51d7b; --card-soft:#fbedf6;">
+                <div class="card-top">
+                  <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+                  <span class="card-badge" id="badge-sikayet">Açılmaya hazır</span>
+                </div>
+                <h2>Şikayet & Personel Görev Paneli</h2>
+                <p>Müşteri şikayetleri, tedarikçi/ürün risk analizi, aylık teslimat verileri, personel görev atamaları ve toplu Excel aktarımları.</p>
+                <div class="card-tags">
+                  <span>Yönetim & Destek</span>
+                  <span>PDF Rapor</span>
+                  <span>Excel Aktarım</span>
+                </div>
+                <div class="card-cta">
+                  <span>Modülü Aç</span>
+                  <span>→</span>
+                </div>
+              </button>
+
+              <button type="button" class="module-card" data-go="kota" style="--card-accent:#e11d48; --card-soft:#fff1f2;">
+                <div class="card-top">
+                  <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></svg>
+                  </div>
+                  <span class="card-badge" id="badge-kota">Açılmaya hazır</span>
+                </div>
+                <h2>Şube Kota & Net Peşinat Takip</h2>
+                <p>Şube bazlı satış kotaları, net peşinat oranları, liderlik sıralaması, yönetici şifre yönetimi ve şube giriş logları.</p>
+                <div class="card-tags">
+                  <span>Şube & Yönetici</span>
+                  <span>Canlı Hedef</span>
+                  <span>Giriş Logları</span>
+                </div>
+                <div class="card-cta">
+                  <span>Modülü Aç</span>
+                  <span>→</span>
+                </div>
+              </button>
+
+              <button type="button" class="module-card" data-go="anketportal" style="--card-accent:#0f766e; --card-soft:#f0fdfa;">
+                <div class="card-top">
+                  <div class="card-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.5 2.2 2 3.5 2s2.5-.5 3.5-2"/><path d="M9 10h.01M15 10h.01"/></svg>
+                  </div>
+                  <span class="card-badge" id="badge-anketportal">Açılmaya hazır</span>
+                </div>
+                <h2>Anket & Değerlendirme Portalı</h2>
+                <p>Yönetici ve mağaza bazlı müşteri memnuniyet sonuçları, 0–10 NPS puan analizleri, tarih filtreleme, PDF raporlama ve erişim logları.</p>
+                <div class="card-tags">
+                  <span>Yönetim & Mağaza</span>
+                  <span>NPS Analizi</span>
+                  <span>PDF Rapor</span>
+                </div>
+                <div class="card-cta">
+                  <span>Modülü Aç</span>
+                  <span>→</span>
+                </div>
+              </button>
+            </div>
+
+            <div class="info-strip">
+              <div class="info-box">
+                <span class="kbd">Alt+1..4</span>
+                <div>
+                  <strong>Hızlı Klavye Geçişi</strong>
+                  <small>Alt+1 Portal, Alt+2 Şikayet, Alt+3 Kota, Alt+4 Anket Portalı</small>
+                </div>
+              </div>
+              <div class="info-box">
+                <span class="kbd">SSO</span>
+                <div>
+                  <strong>Otomatik Panel Girişi</strong>
+                  <small>Merkezi girişle tüm yetkili panellerde oturum otomatik açılır.</small>
+                </div>
+              </div>
+              <div class="info-box">
+                <span class="kbd">3/3</span>
+                <div>
+                  <strong>Oturumlar Korunur</strong>
+                  <small>Sekmeler arası geçişte açık ekranlar ve filtreler sıfırlanmaz.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- MODULE 1: Şikayet & Görevler -->
+      <section class="module-pane" id="pane-sikayet" aria-label="Şikayet ve Görev Paneli">
+        <div class="frame-loader" id="loader-sikayet">
+          <div class="spinner"></div>
+          <span>Şikayet & Görev Paneli yükleniyor…</span>
+        </div>
+        <iframe class="module-frame" id="frame-sikayet" title="Hedef AVM Şikayet Paneli"></iframe>
+      </section>
+
+      <!-- MODULE 2: Kota & Peşinat -->
+      <section class="module-pane" id="pane-kota" aria-label="Şube Kota ve Net Peşinat Takip">
+        <div class="frame-loader" id="loader-kota">
+          <div class="spinner"></div>
+          <span>Şube Kota & Net Peşinat Takip yükleniyor…</span>
+        </div>
+        <iframe class="module-frame" id="frame-kota" title="Hedef AVM Kota Takip"></iframe>
+      </section>
+
+      <!-- MODULE 3: Anket Portalı -->
+      <section class="module-pane" id="pane-anketportal" aria-label="Anket ve Değerlendirme Portalı">
+        <div class="frame-loader" id="loader-anketportal">
+          <div class="spinner"></div>
+          <span>Anket Portalı yükleniyor…</span>
+        </div>
+        <iframe class="module-frame" id="frame-anketportal" title="Hedef AVM Anket Portalı"></iframe>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const MODULES = {
+        sikayet: './modules/sikayet/index.html',
+        kota: './modules/kota/index.html',
+        anketportal: './modules/anketportal/index.html',
+      };
+
+      const loaded = new Set();
+      const moduleReady = new Set();
+      const pendingSSO = new Set();
+      let activeTab = 'home';
+      let ssoRole = 'admin';
+      let currentSession = null; // { role, username, store, passwords: { sikayet, kota, anketportal } }
+
+      // --- Streamlit Component Bridge (Hub <-> Host Streamlit <-> Şikayet Iframe) ---
+      let hostOrigin = null;
+      let lastRenderArgs = {};
+      let pendingPortalAuth = null;
+      const sikayetFrame = document.getElementById('frame-sikayet');
+
+      const sendToHost = (type, data = {}) => {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(
+            { isStreamlitMessage: true, type, ...data },
+            hostOrigin || '*'
+          );
+        }
+      };
+
+      const relayRenderToSikayet = (args) => {
+        if (sikayetFrame && sikayetFrame.contentWindow) {
+          const safeArgs = args?.response?.kind === 'portal_auth' ? {} : (args || {});
+          sikayetFrame.contentWindow.postMessage(
+            { type: 'streamlit:render', args: safeArgs },
+            location.origin
+          );
+        }
+      };
+
+      function requestPortalAuth(username, password) {
+        return new Promise((resolve, reject) => {
+          const id = 'auth-' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+          const timer = setTimeout(() => {
+            if (pendingPortalAuth?.id === id) {
+              pendingPortalAuth = null;
+              reject(new Error('Sunucu yanıtı zaman aşımına uğradı.'));
+            }
+          }, 15000);
+          pendingPortalAuth = {
+            id,
+            resolve: (res) => { clearTimeout(timer); resolve(res); },
+          };
+          sendToHost('streamlit:setComponentValue', {
+            dataType: 'json',
+            value: { id, kind: 'portal_auth', username, password },
+          });
+        });
+      }
+
+      function setModuleBadge(name, state, text) {
+        const badge = document.getElementById('badge-' + name);
+        const tab = document.getElementById('tab-' + name);
+        if (badge) {
+          badge.textContent = text;
+          badge.classList.remove('open', 'wait', 'err');
+          if (state === 'ok') badge.classList.add('open');
+          else if (state === 'wait') badge.classList.add('wait');
+          else if (state === 'err') badge.classList.add('err');
+        }
+        if (tab) {
+          tab.classList.remove('auth-err', 'auth-wait');
+          if (state === 'err') tab.classList.add('auth-err');
+          else if (state === 'wait') tab.classList.add('auth-wait');
+        }
+      }
+
+      function dispatchAutoLogin(name) {
+        if (!currentSession) return;
+        const frame = document.getElementById('frame-' + name);
+        if (!frame || !frame.contentWindow) return;
+
+        pendingSSO.delete(name);
+        setModuleBadge(name, 'wait', 'Otomatik giriş yapılıyor…');
+        frame.contentWindow.postMessage({
+          type: 'hedef:autoLogin',
+          payload: {
+            role: currentSession.role,
+            username: currentSession.username,
+            store: currentSession.store,
+            password: currentSession.passwords[name] || '',
+          },
+        }, location.origin);
+      }
+
+      window.addEventListener('message', (event) => {
+        // 1. Messages coming FROM Streamlit Host -> Hub
+        if (event.source === window.parent && event.data?.type === 'streamlit:render') {
+          hostOrigin = event.origin;
+          lastRenderArgs = event.data.args || {};
+          sendToHost('streamlit:setFrameHeight', {
+            height: Math.max(700, window.innerHeight || screen.availHeight - 80),
+          });
+          const resp = lastRenderArgs.response;
+          if (pendingPortalAuth && resp?.kind === 'portal_auth' && resp?.id === pendingPortalAuth.id) {
+            const cb = pendingPortalAuth.resolve;
+            pendingPortalAuth = null;
+            cb(resp.result);
+            return;
+          }
+          relayRenderToSikayet(lastRenderArgs);
+          return;
+        }
+
+        // 2. Messages coming FROM Şikayet Iframe -> Hub -> Streamlit Host
+        if (sikayetFrame && event.source === sikayetFrame.contentWindow && event.data?.isStreamlitMessage) {
+          if (event.data.type === 'streamlit:componentReady') {
+            relayRenderToSikayet(lastRenderArgs);
+          } else if (event.data.type === 'streamlit:setComponentValue') {
+            sendToHost('streamlit:setComponentValue', {
+              dataType: event.data.dataType || 'json',
+              value: event.data.value,
+            });
+          }
+          return;
+        }
+
+        // 3. Same-origin SSO status messages from module iframes
+        if (event.origin === location.origin && event.data && typeof event.data === 'object') {
+          if (event.data.type === 'hedef:moduleReady' && MODULES[event.data.module]) {
+            const mod = event.data.module;
+            moduleReady.add(mod);
+            if (pendingSSO.has(mod) && currentSession) {
+              dispatchAutoLogin(mod);
+            }
+          } else if (event.data.type === 'hedef:authStatus' && MODULES[event.data.module]) {
+            const { module: mod, status, message } = event.data;
+            if (status === 'ok') {
+              setModuleBadge(mod, 'ok', 'Oturum açıldı ✓');
+            } else if (status === 'skipped') {
+              setModuleBadge(mod, 'idle', message || 'Yönetici girişi gerekir');
+            } else {
+              setModuleBadge(mod, 'err', message || 'Şifre uyuşmadı');
+            }
+          }
+        }
+      });
+
+      sendToHost('streamlit:componentReady', { apiVersion: 1 });
+
+      // --- Navigation & Lazy Keep-Alive Mounting ---
+      const reloadBtn = document.getElementById('reloadActiveBtn');
+      const logoutAllBtn = document.getElementById('logoutAllBtn');
+      const sessionChip = document.getElementById('sessionChip');
+      const sessionLabel = document.getElementById('sessionLabel');
+
+      function updateStatusIndicators() {
+        const count = loaded.size;
+        const statusEl = document.getElementById('activeCountText');
+        if (statusEl) {
+          statusEl.textContent = count > 0
+            ? `3 Sistem Entegre · ${count} Aktif`
+            : '3 Sistem Entegre · Hazır';
+        }
+      }
+
+      function mountModule(name, forceReload = false) {
+        const frame = document.getElementById('frame-' + name);
+        const loader = document.getElementById('loader-' + name);
+        const tab = document.getElementById('tab-' + name);
+        if (!frame || !MODULES[name]) return;
+
+        if (!loaded.has(name) || forceReload) {
+          moduleReady.delete(name);
+          loader.classList.remove('done');
+          frame.onload = () => {
+            loader.classList.add('done');
+            if (name === 'sikayet') {
+              relayRenderToSikayet(lastRenderArgs);
+            }
+            if (pendingSSO.has(name) && currentSession) {
+              setTimeout(() => {
+                if (pendingSSO.has(name)) dispatchAutoLogin(name);
+              }, 350);
+            }
+          };
+          const url = forceReload ? `${MODULES[name]}?t=${Date.now()}` : MODULES[name];
+          frame.src = url;
+          loaded.add(name);
+          tab?.classList.add('loaded');
+          if (!currentSession) {
+            setModuleBadge(name, 'ok', 'Arka planda açık');
+          }
+          updateStatusIndicators();
+        } else if (pendingSSO.has(name) && currentSession) {
+          dispatchAutoLogin(name);
+        }
+      }
+
+      function switchTab(target) {
+        if (!['home', 'sikayet', 'kota', 'anketportal'].includes(target)) return;
+        if (!currentSession && target !== 'home') return;
+        activeTab = target;
+
+        document.querySelectorAll('.nav-tab').forEach((btn) => {
+          const isCurrent = btn.dataset.go === target;
+          btn.classList.toggle('active', isCurrent);
+          btn.setAttribute('aria-selected', String(isCurrent));
+        });
+
+        document.getElementById('pane-home').classList.toggle('hidden', target !== 'home');
+        ['sikayet', 'kota', 'anketportal'].forEach((name) => {
+          document.getElementById('pane-' + name).classList.toggle('active', target === name);
+        });
+
+        reloadBtn.classList.toggle('hidden', target === 'home');
+
+        if (target !== 'home') {
+          mountModule(target, false);
+        }
+      }
+
+      document.querySelectorAll('[data-go]').forEach((el) => {
+        el.addEventListener('click', () => switchTab(el.dataset.go));
+      });
+
+      reloadBtn.addEventListener('click', () => {
+        if (activeTab !== 'home') {
+          if (currentSession) pendingSSO.add(activeTab);
+          mountModule(activeTab, true);
+        }
+      });
+
+      // --- Centralized Portal Login (Admin-Only SSO) ---
+      const portalLoginView = document.getElementById('portalLoginView');
+      const portalDashboardView = document.getElementById('portalDashboardView');
+      const mainNavTabs = document.getElementById('mainNavTabs');
+      const ssoError = document.getElementById('ssoError');
+      const ssoSubmitBtn = document.getElementById('ssoSubmitBtn');
+      const ssoSubmitText = document.getElementById('ssoSubmitText');
+
+      document.getElementById('ssoPeekBtn').addEventListener('click', () => {
+        const input = document.getElementById('ssoPassword');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        document.getElementById('ssoPeekBtn').textContent = show ? 'Gizle' : 'Göster';
+      });
+
+      function showPortalDashboard(labelText) {
+        portalLoginView.classList.add('hidden');
+        portalDashboardView.classList.remove('hidden');
+        mainNavTabs.classList.remove('hidden');
+        if (labelText) {
+          sessionLabel.textContent = labelText;
+          sessionChip.classList.remove('hidden');
+          logoutAllBtn.classList.remove('hidden');
+        }
+      }
+
+      document.getElementById('portalLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        ssoError.classList.add('hidden');
+
+        const username = document.getElementById('ssoUsername').value.trim();
+        const masterPwd = document.getElementById('ssoPassword').value;
+
+        if (!username || !masterPwd) {
+          ssoError.textContent = 'Lütfen kullanıcı adı ve şifrenizi girin.';
+          ssoError.classList.remove('hidden');
+          return;
+        }
+
+        ssoSubmitBtn.disabled = true;
+        ssoSubmitText.textContent = 'Doğrulanıyor…';
+        let auth;
+        try {
+          auth = await requestPortalAuth(username, masterPwd);
+          if (!auth || !auth.ok) {
+            ssoError.textContent = auth?.error || 'Kullanıcı adı veya şifre hatalı.';
+            ssoError.classList.remove('hidden');
+            return;
+          }
+        } catch (err) {
+          ssoError.textContent = err?.message || 'Doğrulama sırasında bir hata oluştu.';
+          ssoError.classList.remove('hidden');
+          return;
+        } finally {
+          ssoSubmitBtn.disabled = false;
+          ssoSubmitText.textContent = 'Giriş Yap ve Panelleri Aç';
+        }
+
+        const verifiedUsername = auth.username || username;
+        currentSession = {
+          role: 'admin',
+          username: verifiedUsername,
+          store: '',
+          passwords: auth.passwords || {
+            sikayet: masterPwd,
+            kota: masterPwd,
+            anketportal: masterPwd,
+          },
+        };
+
+        document.getElementById('ssoPassword').value = '';
+        showPortalDashboard(`Yönetici · ${verifiedUsername}`);
+
+        // Tüm panelleri arka planda başlat ve otomatik yönetici girişi gönder
+        ['sikayet', 'kota', 'anketportal'].forEach((mod) => {
+          pendingSSO.add(mod);
+          setModuleBadge(mod, 'wait', 'Otomatik giriş yapılıyor…');
+          mountModule(mod, false);
+        });
+      });
+
+      logoutAllBtn.addEventListener('click', () => {
+        currentSession = null;
+        pendingSSO.clear();
+        ['sikayet', 'kota', 'anketportal'].forEach((mod) => {
+          const frame = document.getElementById('frame-' + mod);
+          if (frame && frame.contentWindow && loaded.has(mod)) {
+            frame.contentWindow.postMessage({ type: 'hedef:logout' }, location.origin);
+          }
+          setModuleBadge(mod, 'idle', 'Açılmaya hazır');
+        });
+        sessionChip.classList.add('hidden');
+        logoutAllBtn.classList.add('hidden');
+        mainNavTabs.classList.add('hidden');
+        portalDashboardView.classList.add('hidden');
+        portalLoginView.classList.remove('hidden');
+        switchTab('home');
+      });
+
+      // Keyboard shortcuts: Alt+1..4
+      window.addEventListener('keydown', (e) => {
+        if (!e.altKey || e.ctrlKey || e.metaKey) return;
+        if (e.key === '1') { e.preventDefault(); switchTab('home'); }
+        if (e.key === '2') { e.preventDefault(); switchTab('sikayet'); }
+        if (e.key === '3') { e.preventDefault(); switchTab('kota'); }
+        if (e.key === '4') { e.preventDefault(); switchTab('anketportal'); }
+      });
+
+      // Greeting & Live Clock (Istanbul)
+      function updateClock() {
+        const now = new Date();
+        const timeStr = new Intl.DateTimeFormat('tr-TR', {
+          timeZone: 'Europe/Istanbul',
+          day: '2-digit',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(now);
+        document.getElementById('clockText').textContent = timeStr;
+
+        const hour = Number(
+          new Intl.DateTimeFormat('tr-TR', {
+            timeZone: 'Europe/Istanbul',
+            hour: '2-digit',
+            hour12: false,
+          }).format(now)
+        );
+        const greeting = hour < 12 ? 'Günaydın' : hour < 18 ? 'İyi çalışmalar' : 'İyi akşamlar';
+        document.getElementById('greetingTitle').textContent = `${greeting}, Hedef AVM Yönetim Paneli`;
+      }
+
+      updateClock();
+      setInterval(updateClock, 30000);
+    })();
+  </script>
+</body>
+</html>
